@@ -4,10 +4,6 @@ require_once('app/models/User.php');
 
 class UserController
 {
-    private $jsonArray;
-    private $login;
-    private $password;
-    private $level;
     
     public function __construct()
     {
@@ -42,11 +38,11 @@ class UserController
         }
         $sql="SELECT * FROM users";
         $result=$conn->query($sql);
-
         foreach ($result as $user) {
             if ($user['login'] === $login && $user['password'] === md5($password . 'solid')) {
                 session_start();
                 $_SESSION['user'] = $login;
+                $_SESSION['level']=$user['level'];
                 setcookie('user', $user['login'], time() + 3600, "/");
                 $isLogin = true;
                 break;

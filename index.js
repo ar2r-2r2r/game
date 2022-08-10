@@ -50,16 +50,15 @@ window.onload=function(){
             announce(currentPlayer === 'X' ? PLAYERX_WON : PLAYERO_WON);
             if(currentPlayer==='X'){
                 level++;
-                changeLevel(level);
             }
             else{
                 if(level>1){
                     level--;
-                    changeLevel(level);
                 }
             }
             isGameActive = false;
-
+            showLevel(level);
+            setLevel(level);
             return;
         }
 
@@ -99,7 +98,7 @@ window.onload=function(){
         announcer.classList.remove('hide');
     };  
 
-    const changeLevel =(level)=>{
+    const showLevel =(level)=>{
         lvl.innerText=level;
     }
 
@@ -116,7 +115,6 @@ window.onload=function(){
     }
 
     const userAction= (id)=>{
-        console.log("success!");
             document.getElementById(id).innerText=currentPlayer; 
             document.getElementById(id).classList.add(`player${currentPlayer}`);
             updateBoard(id);
@@ -130,7 +128,6 @@ window.onload=function(){
             type:'POST',
             data:{array:clickedArray},
             success:function(data){
-                console.log(data);
                 id=data;
                 document.getElementById(id).innerText=currentPlayer; 
                 document.getElementById(id).classList.add(`player${currentPlayer}`);
@@ -141,6 +138,28 @@ window.onload=function(){
         })
     }
 
+    const getLevel=()=>{
+        $.ajax({
+            url:'getLevel.php',
+            type:'POST',
+            success:function(data){
+                level=data;
+                showLevel(level);
+            }
+        })
+    }
+
+    
+    const setLevel=(level)=>{
+        $.ajax({
+            url:'setLevel.php',
+            type:'POST',
+            data:{level:level},
+            
+        })
+    }
+
+
     const action=(id)=>{
         if(isValidAction(id) && isGameActive) {
             userAction(id);
@@ -149,8 +168,8 @@ window.onload=function(){
             botAction(id);
         }
     }
-
-    changeLevel(level);
+    getLevel();
+    showLevel();
     $('.tile').on('click', function(event){
         let id=$(this).attr("id");
         if(event.target.className=='tile'){
@@ -158,6 +177,5 @@ window.onload=function(){
         }
     })
     $('#reset').on('click', resetBoard);
-
 
 }
